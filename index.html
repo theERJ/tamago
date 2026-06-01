@@ -1,0 +1,765 @@
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323:wght@400&display=swap');
+
+  :root {
+    --pixel: 3px;
+    --screen-bg: #1a2e1a;
+    --screen-text: #88ff44;
+    --screen-dim: #446622;
+    --shell-top: #e8d44d;
+    --shell-bottom: #c4a820;
+    --button-top: #ff6b9d;
+    --button-mid: #e05080;
+    --button-bot: #b03060;
+    --display-border: #555533;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  .tama-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1rem 2rem;
+    font-family: 'Press Start 2P', monospace;
+    min-height: 640px;
+  }
+
+  .tama-shell {
+    width: 280px;
+    background: linear-gradient(160deg, #ffe84d 0%, #e8c830 40%, #c4a820 100%);
+    border-radius: 40% 40% 50% 50% / 30% 30% 40% 40%;
+    padding: 28px 22px 40px;
+    box-shadow:
+      inset 0 3px 0 #fff4a0,
+      inset 0 -4px 0 #9a7a10,
+      4px 8px 0 #8a6a00,
+      8px 14px 20px rgba(0,0,0,0.4);
+    position: relative;
+    image-rendering: pixelated;
+  }
+
+  .tama-shell::before {
+    content: '';
+    position: absolute;
+    top: 12px; left: 50%; transform: translateX(-50%);
+    width: 8px; height: 8px;
+    background: #888;
+    border-radius: 50%;
+    box-shadow: -30px 0 0 #888, 30px 0 0 #888;
+  }
+
+  .screen-bezel {
+    background: #333322;
+    border-radius: 8px;
+    padding: 8px;
+    margin-bottom: 18px;
+    box-shadow:
+      inset 0 2px 4px rgba(0,0,0,0.6),
+      0 2px 0 #555540;
+  }
+
+  .screen {
+    background: #8bac0f;
+    border-radius: 4px;
+    width: 100%;
+    height: 160px;
+    overflow: hidden;
+    position: relative;
+    image-rendering: pixelated;
+  }
+
+  .screen-scanlines {
+    position: absolute; inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 3px,
+      rgba(0,0,0,0.08) 3px,
+      rgba(0,0,0,0.08) 4px
+    );
+    pointer-events: none;
+    z-index: 10;
+  }
+
+  .screen-inner {
+    padding: 8px 10px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    background: #8bac0f;
+  }
+
+  .status-row {
+    display: flex;
+    justify-content: space-between;
+    font-family: 'VT323', monospace;
+    font-size: 13px;
+    color: #306230;
+    margin-bottom: 4px;
+    letter-spacing: 0.5px;
+  }
+
+  .pet-stage {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+
+  .pet-canvas {
+    image-rendering: pixelated;
+    display: block;
+  }
+
+  .message-area {
+    font-family: 'VT323', monospace;
+    font-size: 15px;
+    color: #306230;
+    text-align: center;
+    min-height: 20px;
+    letter-spacing: 0.5px;
+  }
+
+  .stat-bars {
+    margin-bottom: 14px;
+  }
+
+  .stat-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 5px;
+  }
+
+  .stat-label {
+    font-family: 'VT323', monospace;
+    font-size: 13px;
+    color: var(--display-border);
+    width: 52px;
+    letter-spacing: 0.5px;
+  }
+
+  .bar-track {
+    flex: 1;
+    height: 8px;
+    background: #c4a820;
+    border-radius: 1px;
+    border: 1px solid #9a7a10;
+    overflow: hidden;
+    image-rendering: pixelated;
+  }
+
+  .bar-fill {
+    height: 100%;
+    border-radius: 0;
+    transition: width 0.3s;
+    image-rendering: pixelated;
+  }
+
+  .bar-fill.hunger   { background: #e05080; }
+  .bar-fill.happy    { background: #44cc44; }
+  .bar-fill.health   { background: #44aaff; }
+  .bar-fill.sleep    { background: #aa88ff; }
+
+  .buttons-row {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    margin-top: 4px;
+    gap: 6px;
+  }
+
+  .btn {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    font-family: 'VT323', monospace;
+    font-size: 10px;
+    letter-spacing: 0px;
+    text-align: center;
+    line-height: 1.1;
+    color: #fff;
+    text-shadow: 0 1px 0 rgba(0,0,0,0.4);
+    position: relative;
+    padding: 0;
+    outline: none;
+    transition: transform 0.08s;
+    background: var(--button-mid);
+    box-shadow: 0 4px 0 var(--button-bot), 0 6px 8px rgba(0,0,0,0.3);
+  }
+
+  .btn:nth-child(1) { --button-mid: #e05080; --button-bot: #903050; }
+  .btn:nth-child(2) { --button-mid: #50c050; --button-bot: #207020; }
+  .btn:nth-child(3) { --button-mid: #5090e0; --button-bot: #204090; }
+  .btn:nth-child(4) { --button-mid: #e0a030; --button-bot: #905010; }
+
+  .btn:active {
+    transform: translateY(3px);
+    box-shadow: 0 1px 0 var(--button-bot), 0 2px 4px rgba(0,0,0,0.3);
+  }
+
+  .btn-icon { font-size: 20px; display: block; line-height: 1; }
+  .btn-label { font-size: 8px; display: block; color: rgba(255,255,255,0.85); }
+
+  .age-label {
+    text-align: center;
+    font-family: 'VT323', monospace;
+    font-size: 14px;
+    color: #9a7a10;
+    margin-top: 10px;
+    letter-spacing: 1px;
+  }
+
+  .poop-emoji { position: absolute; font-size: 14px; }
+
+  .dead-overlay {
+    position: absolute; inset: 0;
+    background: rgba(0,0,0,0.5);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'VT323', monospace;
+    color: #ff4444;
+    font-size: 18px;
+    text-align: center;
+    z-index: 20;
+    padding: 10px;
+  }
+
+  .blink { animation: blink-anim 1s step-end infinite; }
+  @keyframes blink-anim { 50% { opacity: 0; } }
+
+  .bounce { animation: bounce-anim 0.4s ease; }
+  @keyframes bounce-anim { 0%,100%{transform:translateY(0)} 40%{transform:translateY(-10px)} }
+
+  .shake { animation: shake-anim 0.4s ease; }
+  @keyframes shake-anim { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)} }
+</style>
+
+<h2 class="sr-only" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)">Tamagotchi virtual pet game. Feed, play, clean, and care for your pixel pet.</h2>
+
+<div class="tama-wrap">
+  <div class="tama-shell">
+    <div class="screen-bezel">
+      <div class="screen">
+        <div class="screen-scanlines"></div>
+        <div class="screen-inner">
+          <div class="status-row">
+            <span id="age-label">AGE:0</span>
+            <span id="weight-label">WT:10g</span>
+            <span id="stage-label">EGG</span>
+          </div>
+          <div class="pet-stage" id="pet-stage">
+            <canvas id="pet-canvas" class="pet-canvas" width="80" height="80"></canvas>
+          </div>
+          <div class="message-area" id="message-area">...</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="stat-bars">
+      <div class="stat-row">
+        <span class="stat-label">HUNGER</span>
+        <div class="bar-track"><div class="bar-fill hunger" id="bar-hunger" style="width:100%"></div></div>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">HAPPY</span>
+        <div class="bar-track"><div class="bar-fill happy" id="bar-happy" style="width:80%"></div></div>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">HEALTH</span>
+        <div class="bar-track"><div class="bar-fill health" id="bar-health" style="width:100%"></div></div>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">SLEEP</span>
+        <div class="bar-track"><div class="bar-fill sleep" id="bar-sleep" style="width:100%"></div></div>
+      </div>
+    </div>
+
+    <div class="buttons-row">
+      <button class="btn" id="btn-feed" onclick="petAction('feed')" aria-label="Feed">
+        <span class="btn-icon">🍖</span>
+        <span class="btn-label">FEED</span>
+      </button>
+      <button class="btn" id="btn-play" onclick="petAction('play')" aria-label="Play">
+        <span class="btn-icon">⚽</span>
+        <span class="btn-label">PLAY</span>
+      </button>
+      <button class="btn" id="btn-clean" onclick="petAction('clean')" aria-label="Clean">
+        <span class="btn-icon">🧹</span>
+        <span class="btn-label">CLEAN</span>
+      </button>
+      <button class="btn" id="btn-sleep" onclick="petAction('sleep')" aria-label="Sleep">
+        <span class="btn-icon">💤</span>
+        <span class="btn-label">SLEEP</span>
+      </button>
+    </div>
+  </div>
+  <div class="age-label" id="time-label">TIME: 00:00:00</div>
+</div>
+
+<script>
+const STAGES = ['egg','baby','child','teen','adult','elder'];
+const STAGE_AGES = [0, 1, 3, 7, 15, 25];
+
+const pet = {
+  hunger: 100, happy: 80, health: 100, sleep: 100,
+  age: 0, weight: 10, poop: 0, sick: false, sleeping: false,
+  dead: false, stageIdx: 0, ticks: 0, birthTime: Date.now(),
+  lastPoop: 0, anim: 'idle', animFrame: 0, message: '',
+  messageTimer: 0
+};
+
+const canvas = document.getElementById('pet-canvas');
+const ctx = canvas.getContext('2d');
+ctx.imageSmoothingEnabled = false;
+
+function getStage() { return STAGES[pet.stageIdx]; }
+
+// Pixel art sprites: each is [width, height, pixels array as string (0=transparent,1=main,2=dark,3=light,4=eye,5=blush)]
+const SPRITES = {
+  egg: {
+    w: 20, h: 24,
+    frames: [
+      '00001111111100000000' +
+      '00011111111111000000' +
+      '00111111111111100000' +
+      '01111111111111110000' +
+      '01111111111111110000' +
+      '11111111111111111000' +
+      '11111111111111111000' +
+      '11111111111111111000' +
+      '11111144441111111000' +
+      '11111141411111111000' +
+      '11111144441111111000' +
+      '11111111111111111000' +
+      '11111111111111111000' +
+      '01111111111111110000' +
+      '01111111111111110000' +
+      '00111111111111100000' +
+      '00011111111111000000' +
+      '00001111111100000000' +
+      '00000000000000000000' +
+      '00000000000000000000' +
+      '00000000000000000000' +
+      '00000000000000000000' +
+      '00000000000000000000' +
+      '00000000000000000000'
+    ]
+  },
+  baby: {
+    w: 18, h: 20,
+    frames: [
+      '000011111111000000' +
+      '000111111111100000' +
+      '001111111111110000' +
+      '011111111111111000' +
+      '011144441144411000' +
+      '011141441144110000' +
+      '011144441144411000' +
+      '011111111111111000' +
+      '011155111115511000' +
+      '011111111111111000' +
+      '001111111111110000' +
+      '000111111111100000' +
+      '000011100111000000' +
+      '000011111111000000' +
+      '000001111110000000' +
+      '000000111100000000' +
+      '000000000000000000' +
+      '000000000000000000' +
+      '000000000000000000' +
+      '000000000000000000',
+
+      '000011111111000000' +
+      '000111111111100000' +
+      '001111111111110000' +
+      '011111111111111000' +
+      '011144441144411000' +
+      '011141411144110000' +
+      '011144441144411000' +
+      '011111111111111000' +
+      '011155111115511000' +
+      '011111111111111000' +
+      '001111111111110000' +
+      '000111111111100000' +
+      '000001100110000000' +
+      '000011111111000000' +
+      '000001111110000000' +
+      '000000111100000000' +
+      '000000000000000000' +
+      '000000000000000000' +
+      '000000000000000000' +
+      '000000000000000000'
+    ]
+  },
+  child: {
+    w: 22, h: 26,
+    frames: [
+      '0000011111111110000000' +
+      '0001111111111111100000' +
+      '0011111111111111110000' +
+      '0111111111111111111000' +
+      '0111444411114444111000' +
+      '0111414111111141111000' +
+      '0111444411114444111000' +
+      '0111111111111111111000' +
+      '0111111551111551111000' +
+      '0111111111111111111000' +
+      '0011111111111111110000' +
+      '0001111211121111100000' +
+      '0000021111111120000000' +
+      '0000011111111100000000' +
+      '0000111111111110000000' +
+      '0001111111111111000000' +
+      '0001100000001100000000' +
+      '0001100000001100000000' +
+      '0011110000011110000000' +
+      '0000000000000000000000' +
+      '0000000000000000000000' +
+      '0000000000000000000000' +
+      '0000000000000000000000' +
+      '0000000000000000000000' +
+      '0000000000000000000000' +
+      '0000000000000000000000'
+    ]
+  },
+  teen: {
+    w: 24, h: 30,
+    frames: [
+      '000002222222222220000000' +
+      '000022222222222222000000' +
+      '000222222222222222200000' +
+      '000221111111111122200000' +
+      '002211111111111112220000' +
+      '022111111111111111220000' +
+      '221111144441144411112000' +
+      '221111141411144111112000' +
+      '221111144441144411112000' +
+      '221111111111111111112000' +
+      '221111115511155111112000' +
+      '221111111111111111112000' +
+      '022111112111112111220000' +
+      '002211111111111112200000' +
+      '000221111111111122000000' +
+      '000022222222222220000000' +
+      '000002222222222200000000' +
+      '000000222122221000000000' +
+      '000001222122221200000000' +
+      '000011222022202110000000' +
+      '000111110000011110000000' +
+      '000000000000000000000000' +
+      '000000000000000000000000' +
+      '000000000000000000000000' +
+      '000000000000000000000000' +
+      '000000000000000000000000' +
+      '000000000000000000000000' +
+      '000000000000000000000000' +
+      '000000000000000000000000' +
+      '000000000000000000000000'
+    ]
+  },
+  adult: {
+    w: 26, h: 32,
+    frames: [
+      '00000222222222222200000000' +
+      '00002222222222222220000000' +
+      '00022222222222222222000000' +
+      '00221111111111111122200000' +
+      '02211111111111111112220000' +
+      '22111111111111111111220000' +
+      '22111114444111144441120000' +
+      '22111114141111141411120000' +
+      '22111114444111144441120000' +
+      '22111111111111111111120000' +
+      '22111111111111111111120000' +
+      '22111115511111155111120000' +
+      '22111111111211111111120000' +
+      '22111111111111111111120000' +
+      '02211111111111111112200000' +
+      '00221111111111111122000000' +
+      '00022222222222222220000000' +
+      '00002222222222222200000000' +
+      '00000022222222220000000000' +
+      '00000222122221220000000000' +
+      '00001222022202221000000000' +
+      '00011111000001111000000000' +
+      '00001110000000111000000000' +
+      '00000000000000000000000000' +
+      '00000000000000000000000000' +
+      '00000000000000000000000000' +
+      '00000000000000000000000000' +
+      '00000000000000000000000000' +
+      '00000000000000000000000000' +
+      '00000000000000000000000000' +
+      '00000000000000000000000000' +
+      '00000000000000000000000000'
+    ]
+  },
+  elder: {
+    w: 26, h: 32,
+    frames: [
+      '00000222222222222200000000' +
+      '00002233333333333220000000' +
+      '00022333333333333322000000' +
+      '00231111111111111132200000' +
+      '02311111111111111113220000' +
+      '23111111111111111111320000' +
+      '23111114444111144441320000' +
+      '23111114141111141411320000' +
+      '23111114444111144441320000' +
+      '23111111111111111111320000' +
+      '23111111111111111111320000' +
+      '23111115511111155111320000' +
+      '23111112211111122111320000' +
+      '23111111111111111111320000' +
+      '02311111111111111113200000' +
+      '00231111111111111132000000' +
+      '00023333333333333320000000' +
+      '00002233333333332200000000' +
+      '00000022222222220000000000' +
+      '00000222122221220000000000' +
+      '00001233023302331000000000' +
+      '00011233000003331000000000' +
+      '00001110000000111000000000' +
+      '00000000000000000000000000' +
+      '00000000000000000000000000' +
+      '00000000000000000000000000' +
+      '00000000000000000000000000' +
+      '00000000000000000000000000' +
+      '00000000000000000000000000' +
+      '00000000000000000000000000' +
+      '00000000000000000000000000' +
+      '00000000000000000000000000'
+    ]
+  }
+};
+
+const PALETTES = {
+  normal: {
+    '1': '#ffdd99',
+    '2': '#cc8844',
+    '3': '#cccccc',
+    '4': '#221111',
+    '5': '#ff9999'
+  },
+  sick: {
+    '1': '#cceeaa',
+    '2': '#88aa44',
+    '3': '#aaaaaa',
+    '4': '#112200',
+    '5': '#aaff88'
+  },
+  sleep: {
+    '1': '#aabbee',
+    '2': '#6677bb',
+    '3': '#aaaacc',
+    '4': '#222233',
+    '5': '#aaaaff'
+  }
+};
+
+function drawSprite(name, palette, offsetX, offsetY, scale) {
+  const sp = SPRITES[name];
+  if (!sp) return;
+  const px = sp.frames[0];
+  const pal = PALETTES[palette] || PALETTES.normal;
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  for (let row = 0; row < sp.h; row++) {
+    for (let col = 0; col < sp.w; col++) {
+      const c = px[row * sp.w + col];
+      if (c === '0') continue;
+      const color = pal[c];
+      if (!color) continue;
+      ctx.fillStyle = color;
+      ctx.fillRect(
+        Math.floor(offsetX + col * scale),
+        Math.floor(offsetY + row * scale),
+        scale, scale
+      );
+    }
+  }
+}
+
+function drawPoop(x, y) {
+  const poop = [
+    '0110','1111','1111','0110'
+  ];
+  const s = 3;
+  poop.forEach((row, ry) => {
+    row.split('').forEach((c, cx) => {
+      if (c === '1') {
+        ctx.fillStyle = '#7B4F2E';
+        ctx.fillRect(x + cx*s, y + ry*s, s, s);
+      }
+    });
+  });
+}
+
+function drawZzz(x, y) {
+  ctx.fillStyle = '#6688ff';
+  ctx.font = 'bold 12px monospace';
+  ctx.fillText('z', x, y);
+  ctx.font = 'bold 9px monospace';
+  ctx.fillText('z', x+8, y-6);
+  ctx.font = 'bold 6px monospace';
+  ctx.fillText('z', x+13, y-11);
+}
+
+function renderPet() {
+  ctx.clearRect(0, 0, 80, 80);
+  if (pet.dead) {
+    ctx.fillStyle = '#306230';
+    ctx.font = '10px monospace';
+    ctx.fillText('RIP', 28, 46);
+    return;
+  }
+  const stageName = getStage();
+  const sp = SPRITES[stageName];
+  const scale = stageName === 'egg' ? 3 : stageName === 'baby' ? 3 : 2;
+  const sw = sp.w * scale;
+  const sh = sp.h * scale;
+  const ox = Math.floor((80 - sw) / 2);
+  const oy = Math.floor((80 - sh) / 2);
+  const bob = pet.sleeping ? 0 : (Math.sin(Date.now() / 400) > 0 ? 1 : 0);
+  const pal = pet.sick ? 'sick' : pet.sleeping ? 'sleep' : 'normal';
+  drawSprite(stageName, pal, ox, oy + bob, scale);
+  if (pet.poop > 0) {
+    drawPoop(60, 55);
+    if (pet.poop > 1) drawPoop(50, 60);
+  }
+  if (pet.sleeping) drawZzz(55, 20);
+}
+
+function showMessage(msg, duration) {
+  pet.message = msg;
+  pet.messageTimer = duration || 3000;
+  document.getElementById('message-area').textContent = msg;
+}
+
+function updateUI() {
+  const stage = getStage();
+  document.getElementById('stage-label').textContent = stage.toUpperCase();
+  document.getElementById('age-label').textContent = 'AGE:' + pet.age;
+  document.getElementById('weight-label').textContent = 'WT:' + pet.weight + 'g';
+  document.getElementById('bar-hunger').style.width = pet.hunger + '%';
+  document.getElementById('bar-happy').style.width = pet.happy + '%';
+  document.getElementById('bar-health').style.width = pet.health + '%';
+  document.getElementById('bar-sleep').style.width = pet.sleep + '%';
+  const elapsed = Date.now() - pet.birthTime;
+  const h = String(Math.floor(elapsed/3600000)).padStart(2,'0');
+  const m = String(Math.floor((elapsed%3600000)/60000)).padStart(2,'0');
+  const s = String(Math.floor((elapsed%60000)/1000)).padStart(2,'0');
+  document.getElementById('time-label').textContent = 'TIME: ' + h + ':' + m + ':' + s;
+  renderPet();
+}
+
+function petAction(action) {
+  if (pet.dead) return;
+  const canvas = document.getElementById('pet-canvas');
+  if (action === 'feed') {
+    if (pet.sleeping) { showMessage('ZZZ... SLEEPING!'); return; }
+    if (pet.hunger >= 100) { showMessage('NOT HUNGRY!'); return; }
+    pet.hunger = Math.min(100, pet.hunger + 30);
+    pet.weight = Math.min(99, pet.weight + 2);
+    pet.poop = Math.min(3, pet.poop + 0.5);
+    showMessage('NOM NOM!');
+    canvas.classList.remove('bounce'); void canvas.offsetWidth; canvas.classList.add('bounce');
+  } else if (action === 'play') {
+    if (pet.sleeping) { showMessage('ZZZ... SLEEPING!'); return; }
+    if (pet.hunger < 20) { showMessage('TOO HUNGRY!'); return; }
+    pet.happy = Math.min(100, pet.happy + 25);
+    pet.hunger = Math.max(0, pet.hunger - 10);
+    pet.sleep = Math.max(0, pet.sleep - 8);
+    pet.weight = Math.max(5, pet.weight - 1);
+    showMessage('WHEEE!');
+    canvas.classList.remove('bounce'); void canvas.offsetWidth; canvas.classList.add('bounce');
+  } else if (action === 'clean') {
+    if (pet.poop <= 0) { showMessage('ALREADY CLEAN!'); return; }
+    pet.poop = 0;
+    pet.health = Math.min(100, pet.health + 15);
+    showMessage('SQUEAKY CLEAN!');
+  } else if (action === 'sleep') {
+    if (pet.sleeping) {
+      pet.sleeping = false;
+      showMessage('GOOD MORNING!');
+    } else {
+      pet.sleeping = true;
+      showMessage('NIGHTY NIGHT!');
+    }
+  }
+  updateUI();
+}
+
+function gameTick() {
+  if (pet.dead) return;
+  pet.ticks++;
+
+  const ageInc = pet.ticks % 120 === 0;
+  if (ageInc) {
+    pet.age++;
+    for (let i = STAGE_AGES.length - 1; i >= 0; i--) {
+      if (pet.age >= STAGE_AGES[i]) {
+        if (pet.stageIdx < i) {
+          pet.stageIdx = i;
+          showMessage('I EVOLVED! ✨');
+        }
+        break;
+      }
+    }
+  }
+
+  if (pet.sleeping) {
+    pet.sleep = Math.min(100, pet.sleep + 3);
+    pet.hunger = Math.max(0, pet.hunger - 0.3);
+  } else {
+    pet.hunger = Math.max(0, pet.hunger - 0.5);
+    pet.happy = Math.max(0, pet.happy - 0.3);
+    pet.sleep = Math.max(0, pet.sleep - 0.4);
+    if (pet.poop > 1.5) pet.health = Math.max(0, pet.health - 0.4);
+    if (pet.hunger < 15) pet.health = Math.max(0, pet.health - 0.5);
+    if (pet.sleep < 15) pet.health = Math.max(0, pet.health - 0.3);
+
+    if (pet.hunger < 20 && pet.messageTimer <= 0) showMessage('FEED ME!', 4000);
+    else if (pet.happy < 20 && pet.messageTimer <= 0) showMessage('PLAY WITH ME!', 4000);
+    else if (pet.poop > 1 && pet.messageTimer <= 0) showMessage('CLEAN ME!', 4000);
+    else if (pet.sleep < 20 && pet.messageTimer <= 0) showMessage('I\'M SLEEPY!', 4000);
+
+    if (pet.ticks % 30 === 0 && Math.random() < 0.15 && pet.poop < 2) {
+      pet.poop = Math.min(3, pet.poop + 1);
+      if (pet.messageTimer <= 0) showMessage('I MADE A MESS!', 3000);
+    }
+
+    pet.sick = pet.health < 40 || pet.poop >= 2;
+  }
+
+  if (pet.messageTimer > 0) {
+    pet.messageTimer -= 500;
+    if (pet.messageTimer <= 0) {
+      pet.message = '';
+      document.getElementById('message-area').textContent = '';
+    }
+  }
+
+  if (pet.health <= 0) {
+    pet.dead = true;
+    document.getElementById('message-area').textContent = 'GOODBYE...';
+    document.getElementById('pet-stage').insertAdjacentHTML('beforeend',
+      '<div class="dead-overlay"><span class="blink">YOUR PET HAS PASSED<br><br>PLAY TIME: ' +
+      document.getElementById('time-label').textContent.replace('TIME: ','') +
+      '<br><br>AGE: ' + pet.age + '</span></div>'
+    );
+  }
+
+  updateUI();
+}
+
+setInterval(gameTick, 500);
+setInterval(renderPet, 100);
+updateUI();
+showMessage('TOUCH EGG!', 3000);
+</script>
